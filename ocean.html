@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js canvas - lines - colors</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		</style>
+	</head>
+	<body>
+		<link rel="stylesheet" type="text/css" href="css/styles.css">
+
+		<script src="libs/three.js"></script>
+		<script src="libs/Detector.js"></script>
+		<script src="libs/OrbitControls.js"></script>
+		<script src="libs/inflate.min.js"></script>
+
+		<script src="libs/loaders/FBXLoader.js"></script>
+		<script src="libs/loaders/OBJLoader.js"></script>
+
+		<script src="School.js"></script>
+
+		<script src="Fish.js"></script>
+		<script src="SchoolFish.js"></script>
+
+		<script src="IndividualFish.js"></script>
+
+		<script src="Ocean.js"></script>
+
+
+
+		<script src="Shark.js"></script>
+
+		<div id="info">
+			<div id="fishCounts"></div>
+		</div>
+
+
+		<script>
+
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			var camera, scene, renderer;
+			var points
+			var fishes = []
+			var ocean
+			var sharks = []
+
+
+
+			init();
+			animate();
+
+			function init() {
+				window.addEventListener( 'resize', onWindowResize, false );
+
+
+				camera = new THREE.PerspectiveCamera( 33, window.innerWidth / window.innerHeight, 1, 50000 );
+				camera.position.x = 30;
+				camera.position.z = 30;
+				camera.position.y = 30;
+				camera.lookAt(0,6,0)
+
+
+				scene = new THREE.Scene();
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				// lights
+				const bulbGeometry = new THREE.SphereGeometry( 0.02, 16, 8 );
+				bulbLight = new THREE.PointLight( 0xffffff, 1, 5000, 2 );
+
+				bulbMat = new THREE.MeshStandardMaterial( {
+					emissive: 0xffffee,
+					emissiveIntensity: 1,
+					color: 0x000000
+				} );
+				bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+				bulbLight.position.set( 0, 500, 0 );
+				bulbLight.castShadow = true;
+				scene.add( bulbLight );
+				scene.add( new THREE.AmbientLight( 0xffffff,0.3 ) );
+
+				// var directionalLight = new THREE.DirectionalLight( 0xffffff );
+				// directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
+				// scene.add( directionalLight );
+
+
+
+
+				var floorMat = new THREE.MeshStandardMaterial( {
+					roughness: 0.8,
+					color: 0xffffff,
+					metalness: 0.2,
+					bumpScale: 0.0005
+				} );
+				const floorGeometry = new THREE.PlaneGeometry( 100, 100 );
+				const floorMesh = new THREE.Mesh( floorGeometry, floorMat );
+				floorMesh.receiveShadow = true;
+				floorMesh.rotation.x = - Math.PI / 2.0;
+				floorMesh.position.y=-0.1
+				//scene.add( floorMesh );
+
+
+				//controls
+				// var controls = new THREE.OrbitControls( camera, renderer.domElement);
+				// controls.minDistance = 2;
+				// controls.maxDistance = 50000;
+				// controls.maxPolarAngle = Math.PI;
+
+				// var fish = new Fish(scene,function(){
+				// 	fishes.push(fish)
+				// })
+				ocean = new Ocean();
+				ocean.create(scene,1600)
+				
+
+				var axisHelper = new THREE.AxisHelper(4)
+				scene.add(axisHelper)
+
+
+			}
+
+			
+			function createPersons(num=1){
+				var persons = []
+				for(var i=0;i<num;i++){
+					var person = new Person()
+					enterprise.entry(person)
+					person.show(scene,person.station.pos)
+					
+				}
+				return persons;
+			}
+
+			function changePersonNums(num){
+				nowNum = enterprise.persons.length
+				if( nowNum > num){
+					while(enterprise.persons.length > num){
+						enterprise.expel()
+
+					}
+
+				}else{
+					createPersons(num - nowNum)
+				}
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			
+
+			function animate() {
+				render();
+				requestAnimationFrame( animate );
+				// for(var i=0;i<fishes.length;i++){
+				// 	fishes[i].move(new THREE.Vector3(5,6,7))
+
+				// }
+				ocean.action()
+				var infos = "结群鱼剩余："+ocean.schoolFishes.length
+				infos+= "\n独立鱼剩余："+ocean.individualFishes.length
+
+				document.getElementById("fishCounts").innerText = infos
+
+				moveCamera()
+				
+
+
+			}
+
+			function render() {
+				renderer.render( scene, camera );
+
+			}
+
+			var theta = 0
+			function moveCamera(){
+				var alpha = Math.PI*2/6
+				var r = 40
+
+				
+				var cz = r*Math.sin(alpha)*Math.sin(theta)
+				var cx = r*Math.sin(alpha)*Math.cos(theta)
+				var cy = r*Math.cos(alpha)
+
+				theta-=0.005
+				
+
+				
+			
+				camera.position.set(cx,cy,cz)
+				camera.lookAt(0,10,0)
+				//camera.rotateOnWorldAxis(new THREE.Vector3(0,1,0),0.001)
+
+			}
+
+			
+
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,40 @@
+newmtl PM3D_ZSphere_3_blinnSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd PM3D_ZSphere_3_TXTR.tif
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl PM3D_ZSphere_4_blinnSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd PM3D_ZSphere_4_TXTR.tif
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl SHARK2_1_blinnSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd SHARK2_1_TXTR.tif
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl eay1_blinnSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eay1_TXTR.tif
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl eay_blinnSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eay_TXTR.tif
+Ni 1.00
+Ks 0.50 0.50 0.50
