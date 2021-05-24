@@ -89,9 +89,10 @@ body {
     position: absolute;
     color: #fff;
     left: 10px;
-    right: 10px;
+    top: 10px;
     width: 100%;
     padding: 0px;
+    font-size: 20px;
     text-align:left;
 }
 #chart {

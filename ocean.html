@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js canvas - lines - colors</title>
+		<title>鱼群仿真程序</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		</style>
 	</head>
 	<body>
 		<link rel="stylesheet" type="text/css" href="css/styles.css">
+		<script type="text/javascript" src="libs/dat.gui.min.js"></script>
+
 
 		<script src="libs/three.js"></script>
 		<script src="libs/Detector.js"></script>
@@ -51,6 +53,10 @@
 			var ocean
 			var sharks = []
 
+			var fishCounts = 200
+			var sharkCounts = 1
+			var strategy = 'school'
+
 
 
 			init();
@@ -64,7 +70,8 @@
 				camera.position.x = 30;
 				camera.position.z = 30;
 				camera.position.y = 30;
-				camera.lookAt(0,6,0)
+				camera.lookAt(0,8,0)
+
 
 
 				scene = new THREE.Scene();
@@ -87,7 +94,7 @@
 				bulbLight.position.set( 0, 500, 0 );
 				bulbLight.castShadow = true;
 				scene.add( bulbLight );
-				scene.add( new THREE.AmbientLight( 0xffffff,0.3 ) );
+				scene.add( new THREE.AmbientLight( 0xffffff,0.8 ) );
 
 				// var directionalLight = new THREE.DirectionalLight( 0xffffff );
 				// directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
@@ -111,16 +118,18 @@
 
 
 				//controls
-				// var controls = new THREE.OrbitControls( camera, renderer.domElement);
-				// controls.minDistance = 2;
-				// controls.maxDistance = 50000;
-				// controls.maxPolarAngle = Math.PI;
+				var controls = new THREE.OrbitControls( camera, renderer.domElement);
+				controls.minDistance = 2;
+				controls.maxDistance = 50000;
+				controls.maxPolarAngle = Math.PI;
 
 				// var fish = new Fish(scene,function(){
 				// 	fishes.push(fish)
 				// })
-				ocean = new Ocean();
-				ocean.create(scene,1600)
+				// ocean = new Ocean();
+				// ocean.type = "school"
+
+				// ocean.create(scene,1000)
 				
 
 				var axisHelper = new THREE.AxisHelper(4)
@@ -130,30 +139,7 @@
 			}
 
 			
-			function createPersons(num=1){
-				var persons = []
-				for(var i=0;i<num;i++){
-					var person = new Person()
-					enterprise.entry(person)
-					person.show(scene,person.station.pos)
-					
-				}
-				return persons;
-			}
-
-			function changePersonNums(num){
-				nowNum = enterprise.persons.length
-				if( nowNum > num){
-					while(enterprise.persons.length > num){
-						enterprise.expel()
-
-					}
-
-				}else{
-					createPersons(num - nowNum)
-				}
-
-			}
+			
 
 			function onWindowResize() {
 
@@ -167,8 +153,24 @@
 
 			}
 
-			
+			function start(){
+				if(ocean == undefined){
+					ocean = new Ocean();
+					ocean.type = strategy
+					ocean.create(scene,fishCounts,sharkCounts)
+				}
+				runing = true
 
+
+			}
+			function pause(){
+				runing = false
+
+
+			}
+
+			
+			var runing = false
 			function animate() {
 				render();
 				requestAnimationFrame( animate );
@@ -176,16 +178,17 @@
 				// 	fishes[i].move(new THREE.Vector3(5,6,7))
 
 				// }
-				ocean.action()
-				var infos = "结群鱼剩余："+ocean.schoolFishes.length
-				infos+= "\n独立鱼剩余："+ocean.individualFishes.length
-
-				document.getElementById("fishCounts").innerText = infos
-
-				moveCamera()
 				
+				if(runing){
+					ocean.action()
+					var infos = "结群鱼剩余："+ocean.schoolFishes.length
+					infos+= "\n独立鱼剩余："+ocean.individualFishes.length
 
+					document.getElementById("fishCounts").innerText = infos
 
+				}
+
+				//moveCamera()
 			}
 
 			function render() {
@@ -213,6 +216,60 @@
 				//camera.rotateOnWorldAxis(new THREE.Vector3(0,1,0),0.001)
 
 			}
+
+			var Options = function() {
+			  this.控制面板 = '控制面板';
+			  this.小鱼数量 = fishCounts;
+			  this.鲨鱼数量 = sharkCounts;
+			  this.是否随机 = 0;
+
+
+
+			  this.开始_暂停 = function() {
+			  	if(runing){
+			  		pause()
+
+			  	}else{
+  					start()
+			  	}
+
+			  };
+			};
+
+			window.onload = function() {
+			  var options = new Options();
+			  var gui = new dat.GUI();
+
+			  gui.add(options, '控制面板');
+
+			  var fishController = gui.add(options, '小鱼数量', 1, 1000);
+			  var sharkController = gui.add(options, '鲨鱼数量',1,10);
+			  var schoolController = gui.add(options, '是否随机',0,1);
+
+
+			  gui.add(options, '开始_暂停');
+
+
+			  fishController.onChange(function(value) {
+			    fishCounts = value
+			  });
+
+
+			  sharkController.onChange(function(value){
+			  	sharkCounts = value
+			  })
+
+			  schoolController.onChange(function(value){
+			  	if(value<0.5){
+			  		strategy = 'school'
+
+			  	}else{
+			  		strategy = 'individual'
+
+			  	}
+			  })
+  			}
+
 
 			
 

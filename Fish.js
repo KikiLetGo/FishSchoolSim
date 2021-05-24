@@ -14,8 +14,6 @@ Fish.prototype.create = function(scene,callback) {
 
 	this.scene = scene
 
-	var textureLoader = new THREE.TextureLoader( manager );
-	var texture = textureLoader.load( 'models/fish2.jpg' );
 
 
 	var loader = new THREE.OBJLoader( manager );
@@ -26,7 +24,7 @@ Fish.prototype.create = function(scene,callback) {
 					object.scale.set(0.01,0.01,0.01)
 					object.traverse( function ( child ) {
 						if ( child instanceof THREE.Mesh ) {
-							child.material.map = texture;
+							//child.material.map = texture;
 							var mat  = new THREE.MeshStandardMaterial( {
 										
 										color: 0xFF8040
